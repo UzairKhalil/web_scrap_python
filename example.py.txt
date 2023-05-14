@@ -1,0 +1,31 @@
+from bs4 import BeautifulSoup
+# from selenium.webdriver import Chrome
+# from selenium import webdriver
+# import os
+# driver = webdriver.Chrome(os.getcwd() + "./chromedriver.exe")
+
+# driver = Chrome(executable_path='/chromedriver.exe')
+
+# from selenium.webdriver import Chrome, Service
+
+# service = Service(executable_path='./chromedriver.exe')
+# driver = Chrome(service=service)
+
+from selenium import webdriver
+import os
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--headless")
+service = webdriver.chrome.service.Service(executable_path=os.getcwd() + "./chromedriver.exe")
+
+driver = webdriver.Chrome(service=service, options=chrome_options)
+# driver.get('http://quotes.toscrape.com/js')
+driver.get('https://www.catch.com.au/seller/vdoo/products.html')
+soup = BeautifulSoup(driver.page_source, 'lxml')
+# auther_element = soup.find("small", class_="author")
+auther_elements = soup.find_all("a", class_="css-1k3ukvl")
+for auther_element in auther_elements:
+    print(auther_element.text)
+    print(auther_element.get("href"))
+
+driver.quit()
