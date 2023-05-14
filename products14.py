@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import datetime
-
+# from google.colab import files
 
 url = "https://www.catch.com.au/seller/vdoo/products.html"
 # url = input("Enter the URL of the products page: ")
@@ -12,7 +12,7 @@ if "/seller/" not in url or "/products.html" not in url:
     sys.exit(1)
 
 api_url = url.replace("/products.html", "/products.json")
-max_pages = 50
+max_pages = 1
 params = {"page": 1}
 product_list = []
 
@@ -46,8 +46,9 @@ while True:
         imagesrc_list = []
         image_tags = soup.select("img.css-110rls4")
         for index, image in enumerate(image_tags):
-            imagesrc_list.append(f"img{index+1}: {image['src']}")
-
+            imagesrc_list.append(image['src'])
+            key = f"img{index+1}"
+            product[key] = image['src']
 
         # Scraping Other Sellers
         other_seller_list = []
@@ -57,9 +58,7 @@ while True:
             other_seller_list.append({f"Seller{len(other_seller_list)+1}": "", f"Price{len(other_seller_list)+1}": seller_price})
 
         # Creating Product Dictionary
-        product = {"Title": title, "Brand": brand, "Price": price, "Quantity": quantity}
-        for i in range(len(imagesrc_list)):
-            product[f"img{i+1}"] = imagesrc_list[i]
+        product = {"Title": title, "Brand": brand, "Price": price, "Quantity": quantity, "Product_URL": product_url}
         product["Description"] = description
         for other_seller in other_seller_list:
             product.update(other_seller)
@@ -71,7 +70,8 @@ while True:
     params["page"] += 1
 
 print(f"Scraped {len(product_list)} products in total")
-print(len(product_list))
+# print(len(product_list))
+print(product_list)
 # Exporting to CSV
 csv_columns = []
 for product in product_list:
@@ -80,9 +80,10 @@ for product in product_list:
             csv_columns.append(key)
 
 # csv_file = "products.csv"
-current_date = datetime.date.today().strftime("%d-%m-%Y")
+# current_date = datetime.date.today().strftime("%d-%m-%Y")
+current_date = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M")
 
-csv_file = f"./csvs/products-{current_date}.csv"
+csv_file = f"{current_date}.csv"
 
 try:
     with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
@@ -94,4 +95,8 @@ try:
 except IOError:
     print("I/O error")
 
-
+try:
+    # Download CSV file locally
+    files.download(csv_file)
+except IOError:
+    print("I/O error")
