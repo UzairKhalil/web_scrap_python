@@ -9,36 +9,41 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 driver.set_page_load_timeout(900)
 
 
-link = 'https://www.catch.com.au/seller/vdoo/products.html?page=1'
+# link = 'https://www.catch.com.au/seller/vdoo/products.html?page=1'
+link = 'https://www.catch.com.au/product/2x-pure-natural-cotton-king-size-pillow-case-cover-slip-54x94cm-white-22208142/'
 driver.get(link)
 
 soup = BeautifulSoup(driver.page_source, 'lxml')
-product_links = soup.find_all("a", class_="css-1k3ukvl")
+# product_links = soup.find_all("a", class_="css-1k3ukvl")
 
-urls = []
-products = []
-for product_link in product_links:
-    if product_link.has_attr("url"):  # add a condition to check if 'url' attribute exists
-        url = product_link["url"]
-        if url.startswith("/"):
-            url = "https://www.catch.com.au" + url
-        urls.append(url)
+quantity = soup.find(class_="css-8httoy")
+print(quantity)
+# print (product_links)
 
-        driver.get(url)
-        soup_prod = BeautifulSoup(driver.page_source, 'lxml')
+# urls = []
+# products = []
+# for product_link in product_links:
+#     if product_link.has_attr("url"): 
+#         url = product_link["url"]
+#         if url.startswith("/"):
+#             url = "https://www.catch.com.au" + url
+#         urls.append(url)
 
-        title = soup_prod.find("h1", class_="e12cshkt0").text.strip()
-        price = soup_prod.find("span", class_="css-1qfcjyj").text.strip()
-        image_link = soup_prod.find("img", class_="css-qvzl9f")["src"]
-        product = {
-            "title": title,
-            "price": price,
-            "image_link": image_link
-        }
-        products.append(product)
+#         driver.get(url)
+#         soup_prod = BeautifulSoup(driver.page_source, 'lxml')
+
+#         title = soup_prod.find("h1", class_="e12cshkt0").text.strip()
+#         price = soup_prod.find("span", class_="css-1qfcjyj").text.strip()
+#         image_link = soup_prod.find("img", class_="css-qvzl9f")["src"]
+#         product = {
+#             "title": title,
+#             "price": price,
+#             "image_link": image_link
+#         }
+#         products.append(product)
 driver.quit()
-print(len(products))
-print(products)
+# print(len(products))
+# print(products)
 
 
 # urls = []
